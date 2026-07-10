@@ -54,10 +54,14 @@ h2 { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: #1e293b; dis
 .item-card.claimed { opacity: 0.45; filter: grayscale(40%); background-color: #f8fafc; border-style: dashed; }
 .item-card.claimed .card-title { text-decoration: line-through; color: #94a3b8; }
 
-/* 주인 찾음 버튼 */
+/* 기능 제어 버튼 (주인찾음 / 수령완료 / 삭제) */
 .status-btn { border: 1px solid #ef4444; background: transparent; color: #ef4444; padding: 5px 10px; font-size: 11px; border-radius: 6px; cursor: pointer; font-weight: 700; transition: all 0.2s; }
 .status-btn:hover { background: #ef4444; color: white; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.2); }
 .status-btn.completed { border: 1px solid #94a3b8; background: #94a3b8; color: white; cursor: not-allowed; box-shadow: none; }
+
+/* [추가] 내가 등록한 글에만 나타나는 삭제 버튼 스타일 */
+.delete-btn { border: 1px solid #cbd5e1; background: #ffffff; color: #64748b; padding: 5px 10px; font-size: 11px; border-radius: 6px; cursor: pointer; font-weight: 700; transition: all 0.2s; }
+.delete-btn:hover { background: #ef4444; color: white; border-color: #ef4444; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.15); }
 
 /* 카드형 */
 .item-list.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
@@ -78,7 +82,7 @@ h2 { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: #1e293b; dis
 .item-list.list .card-title { font-size: 16px; font-weight: 700; color: #0f172a; }
 .item-list.list .card-meta { font-size: 13px; color: #475569; }
 .item-list.list .badge { display: inline-block; align-self: flex-start; padding: 3px 8px; font-size: 11px; border-radius: 6px; background: #eff6ff; color: #1d4ed8; font-weight: 700; margin-top: 1px; }
-.item-list.list .status-btn { align-self: flex-start; padding: 6px 12px; font-size: 12px; border-radius: 8px; }
+.item-list.list .status-btn, .item-list.list .delete-btn { align-self: flex-start; padding: 6px 12px; font-size: 12px; border-radius: 8px; }
 
 /* 모달 컨텐츠 레이아웃 */
 .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.3); backdrop-filter: blur(2px); }
@@ -95,7 +99,7 @@ h2 { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: #1e293b; dis
 .form-group input, .form-group select { width: 100%; padding: 11px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; color: #334155; outline: none; transition: border-color 0.2s; }
 .form-group input:focus, .form-group select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
 
-/* [수정] 다른 입력창들과 완벽히 일치하는 단일 보더 형태의 커스텀 박스 스타일링 */
+/* 커스텀 박스 스타일링 */
 .custom-file-box { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 11px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; color: #94a3b8; background: #ffffff; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; user-select: none; }
 .custom-file-box:hover { border-color: #3b82f6; background-color: #f8fafc; }
 .upload-icon { color: #94a3b8; font-size: 14px; }
