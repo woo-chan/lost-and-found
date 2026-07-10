@@ -92,11 +92,11 @@ customFileTrigger.addEventListener('click', () => {
 itemImagesInput.addEventListener('change', () => {
     const files = itemImagesInput.files;
     if (files.length > 0) {
-        fileCountPreview.innerText = `📸 선택된 사진: ${files.length}개`;
+        fileCountPreview.innerText = `선택된 사진: ${files.length}개`;
         customFileTrigger.style.color = '#334155'; // 입력이 완료된 텍스트 색상과 동기화
         customFileTrigger.style.borderColor = '#3b82f6';
     } else {
-        fileCountPreview.innerText = '예: 사진 업로드 (클릭하여 선택)';
+        fileCountPreview.innerText = '사진 업로드 (클릭하여 선택)';
         customFileTrigger.style.color = '#94a3b8';
         customFileTrigger.style.borderColor = '#cbd5e1';
     }
