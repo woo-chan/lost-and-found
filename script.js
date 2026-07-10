@@ -144,7 +144,7 @@ openModalBtn.addEventListener('click', () => {
 // [수정] 모달을 닫을 때 인풋 상자 내부 텍스트 및 테두리 색상도 초기 상태로 리셋
 function closeSidePage() {
     lostItemForm.reset();
-    fileCountPreview.innerText = '예: 사진 업로드 (클릭하여 선택)';
+    fileCountPreview.innerText = '사진 업로드 (클릭하여 선택)';
     customFileTrigger.style.color = '#94a3b8';
     customFileTrigger.style.borderColor = '#cbd5e1';
     modal.classList.remove('show');
