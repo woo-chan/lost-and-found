@@ -34,14 +34,11 @@ const filterButtons = document.querySelectorAll('.category-buttons .btn');
 const viewGridBtn = document.getElementById('view-grid-btn');
 const viewListBtn = document.getElementById('view-list-btn');
 
-// [수정] 이메일/비밀번호 로그인 노드 타겟팅
-const loginEmailInput = document.getElementById('login-email');
-const loginPasswordInput = document.getElementById('login-password');
-const loginBtn = document.getElementById('login-btn');
-const signupBtn = document.getElementById('signup-btn');
+// [수정] 구글 인증 단일 처리를 위한 타겟팅 조정
+const googleLoginBtn = document.getElementById('google-login-btn');
 const logoutBtn = document.getElementById('logout-btn');
-const loginFormArea = document.getElementById('login-form-area');
-const userInfoArea = document.getElementById('user-info-area');
+const loggedOutArea = document.getElementById('logged-out-area');
+const loggedInArea = document.getElementById('logged-in-area');
 const userInfoSpan = document.getElementById('user-info');
 
 const categoryMap = {
@@ -52,7 +49,7 @@ const categoryMap = {
     others: '기타'
 };
 
-// 이미지 용량을 최적화하여 Firestore 문자열 한계점 내로 압축하는 함수
+// 이미지 파일 압축 프로세서
 function compressAndConvertToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -84,58 +81,29 @@ function compressAndConvertToBase64(file) {
     });
 }
 
-// ─── [수정] 1. 파이어베이스 이메일/비밀번호 인증 제어 로직 ───
-
-// 이메일 회원가입 처리
-signupBtn.addEventListener('click', () => {
-    const email = loginEmailInput.value.trim();
-    const password = loginPasswordInput.value.trim();
-    
-    if (!email || !password) return alert("이메일과 비밀번호를 전원 입력해 주세요.");
-    if (password.length < 6) return alert("보안을 위해 비밀번호는 6자리 이상이어야 합니다.");
-
-    auth.createUserWithEmailAndPassword(email, password)
-        .then(() => {
-            alert("회원가입이 완료되었습니다! 자동으로 로그인 처리됩니다.");
-            loginEmailInput.value = "";
-            loginPasswordInput.value = "";
-        })
-        .catch(err => alert("회원가입 실패: " + err.message));
-});
-
-// 이메일 로그인 처리
-loginBtn.addEventListener('click', () => {
-    const email = loginEmailInput.value.trim();
-    const password = loginPasswordInput.value.trim();
-
-    if (!email || !password) return alert("이메일과 비밀번호를 입력해 주세요.");
-
-    auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-            alert("로그인에 성공했습니다.");
-            loginEmailInput.value = "";
-            loginPasswordInput.value = "";
-        })
+// ─── [수정] 1. 구글 팝업 인증 처리 일원화 ───
+googleLoginBtn.addEventListener('click', () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+        .then(() => alert("구글 로그인에 성공했습니다!"))
         .catch(err => alert("로그인 실패: " + err.message));
 });
 
-// 로그아웃 처리
 logoutBtn.addEventListener('click', () => {
     auth.signOut().then(() => alert("로그아웃 되었습니다."));
 });
 
-// 로그인 상태 인터프리터 갱신
 auth.onAuthStateChanged((user) => {
     if (user) {
         currentUser = user;
-        userInfoSpan.innerText = `${user.email.split('@')[0]}님`; // 이메일 앞자리만 추출 표기
-        loginFormArea.style.display = "none";
-        userInfoArea.style.display = "flex"; 
+        userInfoSpan.innerText = `${user.displayName}님`; // 구글 프로필 실명 바인딩
+        loggedOutArea.style.display = "none";
+        loggedInArea.style.display = "flex"; 
     } else {
         currentUser = null;
         userInfoSpan.innerText = "";
-        loginFormArea.style.display = "flex";
-        userInfoArea.style.display = "none";  
+        loggedOutArea.style.display = "block";
+        loggedInArea.style.display = "none";  
     }
     renderItems(); 
 });
@@ -149,7 +117,7 @@ db.collection("lostItems").orderBy("timestamp", "asc").onSnapshot((snapshot) => 
     renderItems();
 });
 
-// 3. 등록 패널 및 토글 제어
+// 3. 등록 패널 제어
 openModalBtn.addEventListener('click', () => {
     modal.style.display = 'block';
     setTimeout(() => { modal.classList.add('show'); }, 10);
@@ -174,7 +142,7 @@ viewListBtn.addEventListener('click', () => {
     renderItems();
 });
 
-// 4. 분실물 등록 처리 (Firestore 데이터 직접 주입)
+// 4. 분실물 등록 처리
 lostItemForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!currentUser) return alert("로그인이 필요한 작업입니다.");
@@ -221,7 +189,7 @@ lostItemForm.addEventListener('submit', async (e) => {
     }
 });
 
-// 5. 주인 찾음 상태 전환 클라우드 커밋
+// 5. 주인 찾음 상태 전환
 function toggleClaimStatus(id) {
     if (!currentUser) return alert("로그인 후 이용하실 수 있습니다.");
     
@@ -294,7 +262,7 @@ function renderItems() {
     renderPagination(filteredItems.length);
 }
 
-// 5개 제한 슬라이딩 윈도우 페이지네이션
+// 5개 제한 페이지네이션
 function renderPagination(totalItems) {
     paginationTop.innerHTML = '';
     paginationBottom.innerHTML = '';
