@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>분실물 찾기</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>분실물 찾기</h1>
+            <div class="auth-box">
+                <div id="login-form-area" class="auth-form">
+                    <input type="email" id="login-email" placeholder="이메일 주소" required>
+                    <input type="password" id="login-password" placeholder="비밀번호" required>
+                    <button id="login-btn" class="auth-btn">로그인</button>
+                    <button id="signup-btn" class="auth-btn signup-btn">회원가입</button>
+                </div>
+                
+                <div id="user-info-area" class="auth-logged" style="display: none;">
+                    <span id="user-info" class="user-info"></span>
+                    <button id="logout-btn" class="auth-btn">로그아웃</button>
+                    <button id="open-modal-btn" class="open-btn">분실물 등록하기</button>
+                </div>
+            </div>
+        </header>
+
+        <section class="filter-section">
+            <div class="category-buttons">
+                <button class="btn active" data-category="all">전체</button>
+                <button class="btn" data-category="wallet">지갑 · 카드</button>
+                <button class="btn" data-category="electronics">전자기기</button>
+                <button class="btn" data-category="jewelry">액세서리</button>
+                <button class="btn" data-category="cosmetics">화장품</button>
+                <button class="btn" data-category="others">기타</button>
+            </div>
+        </section>
+
+        <section class="controls-section">
+            <div id="pagination-top" class="pagination"></div>
+            <div class="view-toggles">
+                <button id="view-grid-btn" class="view-btn active">카드 보기</button>
+                <button id="view-list-btn" class="view-btn">목록 보기</button>
+            </div>
+        </section>
+
+        <section class="list-section">
+            <h2>
+                분실물 목록 
+                <span id="count-total" class="count-badge">전체 0</span>
+                <span id="count-claimed" class="count-badge">완료 0</span>
+            </h2>
+            <div id="item-list" class="item-list grid">
+                <p class="no-data">등록된 분실물이 없습니다.</p>
+            </div>
+            <div id="pagination-bottom" class="pagination"></div>
+        </section>
+
+        <div id="lost-item-modal" class="modal">
+            <div class="modal-content">
+                <span id="close-modal-btn" class="close-btn">&times;</span>
+                <h2>새 분실물 등록</h2>
+                <form id="lost-item-form">
+                    <div class="form-group">
+                        <label for="item-category">카테고리 (필수)</label>
+                        <select id="item-category" required>
+                            <option value="" disabled selected>카테고리를 선택해 주세요</option>
+                            <option value="wallet">지갑 · 카드</option>
+                            <option value="electronics">전자기기</option>
+                            <option value="jewelry">목걸이, 반지, 팔찌 등</option>
+                            <option value="cosmetics">화장품</option>
+                            <option value="others">기타</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="item-name">물품명 (필수)</label>
+                        <input type="text" id="item-name" placeholder="예: 검은색 가죽 지갑" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="item-location">습득 장소 (필수)</label>
+                        <input type="text" id="item-location" placeholder="예: 2학년 3반 교실" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="item-image">사진 첨부 (최대 3개, 필수)</label>
+                        <input type="file" id="item-images" accept="image/*" multiple required>
+                    </div>
+
+                    <button type="submit" class="submit-btn">등록하기</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
