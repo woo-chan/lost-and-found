@@ -39,9 +39,10 @@ const loggedOutArea = document.getElementById('logged-out-area');
 const loggedInArea = document.getElementById('logged-in-area');
 const userInfoSpan = document.getElementById('user-info');
 
-// [추가] 커스텀 파일 피드백 제어 노드 타겟팅
+// 커스텀 요소 제어 노드 타겟팅
 const itemImagesInput = document.getElementById('item-images');
 const fileCountPreview = document.getElementById('file-count-preview');
+const customFileTrigger = document.getElementById('custom-file-trigger');
 
 const categoryMap = {
     wallet: '지갑 · 카드',
@@ -82,15 +83,22 @@ function compressAndConvertToBase64(file) {
     });
 }
 
-// [추가] 유저가 사진을 선택했을 때 '선택된 파일 없음' 텍스트를 역동적으로 변환
+// [추가] 디자인 칸을 클릭했을 때 실제 파일 선택창이 원활히 켜지도록 트리거 강제 바인딩
+customFileTrigger.addEventListener('click', () => {
+    itemImagesInput.click();
+});
+
+// [수정] 파일 선택 시 인풋 박스 내부 플레이스홀더 텍스트와 폰트 컬러 변경 제어
 itemImagesInput.addEventListener('change', () => {
     const files = itemImagesInput.files;
     if (files.length > 0) {
-        fileCountPreview.innerText = `선택된 사진: ${files.length}개`;
-        fileCountPreview.style.color = '#3b82f6';
+        fileCountPreview.innerText = `📸 선택된 사진: ${files.length}개`;
+        customFileTrigger.style.color = '#334155'; // 입력이 완료된 텍스트 색상과 동기화
+        customFileTrigger.style.borderColor = '#3b82f6';
     } else {
-        fileCountPreview.innerText = '선택된 파일 없음';
-        fileCountPreview.style.color = '#94a3b8';
+        fileCountPreview.innerText = '예: 사진 업로드 (클릭하여 선택)';
+        customFileTrigger.style.color = '#94a3b8';
+        customFileTrigger.style.borderColor = '#cbd5e1';
     }
 });
 
@@ -133,11 +141,12 @@ openModalBtn.addEventListener('click', () => {
     setTimeout(() => { modal.classList.add('show'); }, 10);
 });
 
-// [수정] 모달이 닫힐 때 파일 미리보기 카운트 텍스트도 원상 복구 초기화
+// [수정] 모달을 닫을 때 인풋 상자 내부 텍스트 및 테두리 색상도 초기 상태로 리셋
 function closeSidePage() {
     lostItemForm.reset();
-    fileCountPreview.innerText = '선택된 파일 없음';
-    fileCountPreview.style.color = '#94a3b8';
+    fileCountPreview.innerText = '예: 사진 업로드 (클릭하여 선택)';
+    customFileTrigger.style.color = '#94a3b8';
+    customFileTrigger.style.borderColor = '#cbd5e1';
     modal.classList.remove('show');
     setTimeout(() => { modal.style.display = 'none'; }, 300);
 }
@@ -341,7 +350,7 @@ filterButtons.forEach(button => {
 
 function resetFilterButtons() {
     filterButtons.forEach(btn => {
-        if (btn.getAttribute('data-category'] === 'all') {
+        if (btn.getAttribute('data-category') === 'all') {
             btn.classList.add('active');
         } else {
             btn.classList.remove('active');
