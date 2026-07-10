@@ -39,7 +39,6 @@ const loggedOutArea = document.getElementById('logged-out-area');
 const loggedInArea = document.getElementById('logged-in-area');
 const userInfoSpan = document.getElementById('user-info');
 
-// 커스텀 요소 제어 노드 타겟팅
 const itemImagesInput = document.getElementById('item-images');
 const fileCountPreview = document.getElementById('file-count-preview');
 const customFileTrigger = document.getElementById('custom-file-trigger');
@@ -52,6 +51,7 @@ const categoryMap = {
     others: '기타'
 };
 
+// Firestore 1MB 제한 우회를 위한 초경량 압축 최적화 (가로 400px, 화질 50%)
 function compressAndConvertToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -61,7 +61,7 @@ function compressAndConvertToBase64(file) {
             img.src = event.target.result;
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 500; 
+                const MAX_WIDTH = 400; 
                 let width = img.width;
                 let height = img.height;
 
@@ -75,7 +75,7 @@ function compressAndConvertToBase64(file) {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.5);
                 resolve(compressedBase64);
             };
         };
@@ -83,20 +83,18 @@ function compressAndConvertToBase64(file) {
     });
 }
 
-// [추가] 디자인 칸을 클릭했을 때 실제 파일 선택창이 원활히 켜지도록 트리거 강제 바인딩
 customFileTrigger.addEventListener('click', () => {
     itemImagesInput.click();
 });
 
-// [수정] 파일 선택 시 인풋 박스 내부 플레이스홀더 텍스트와 폰트 컬러 변경 제어
 itemImagesInput.addEventListener('change', () => {
     const files = itemImagesInput.files;
     if (files.length > 0) {
-        fileCountPreview.innerText = `선택된 사진: ${files.length}개`;
-        customFileTrigger.style.color = '#334155'; // 입력이 완료된 텍스트 색상과 동기화
+        fileCountPreview.innerText = `📸 선택된 사진: ${files.length}개`;
+        customFileTrigger.style.color = '#334155';
         customFileTrigger.style.borderColor = '#3b82f6';
     } else {
-        fileCountPreview.innerText = '사진 업로드 (클릭하여 선택)';
+        fileCountPreview.innerText = '예: 사진 업로드 (클릭하여 선택)';
         customFileTrigger.style.color = '#94a3b8';
         customFileTrigger.style.borderColor = '#cbd5e1';
     }
@@ -141,12 +139,17 @@ openModalBtn.addEventListener('click', () => {
     setTimeout(() => { modal.classList.add('show'); }, 10);
 });
 
-// [수정] 모달을 닫을 때 인풋 상자 내부 텍스트 및 테두리 색상도 초기 상태로 리셋
+// [수정] 모달이 완전히 닫힐 때 '이미지 압축 중...' 버튼 잠금 상태를 즉시 확실하게 해제
 function closeSidePage() {
     lostItemForm.reset();
-    fileCountPreview.innerText = '사진 업로드 (클릭하여 선택)';
+    fileCountPreview.innerText = '예: 사진 업로드 (클릭하여 선택)';
     customFileTrigger.style.color = '#94a3b8';
     customFileTrigger.style.borderColor = '#cbd5e1';
+    
+    const submitBtn = lostItemForm.querySelector('.submit-btn');
+    submitBtn.innerText = "등록하기";
+    submitBtn.disabled = false;
+
     modal.classList.remove('show');
     setTimeout(() => { modal.style.display = 'none'; }, 300);
 }
@@ -206,6 +209,7 @@ lostItemForm.addEventListener('submit', async (e) => {
     } catch (err) {
         alert("등록 실패: " + err.message);
     } finally {
+        // [수정] 성공하든 실패하든 전송 프로세스가 끝나면 로딩 텍스트 원상복구
         submitBtn.innerText = "등록하기";
         submitBtn.disabled = false;
     }
@@ -222,6 +226,19 @@ function toggleClaimStatus(id) {
         }).catch(err => alert("수정 실패: " + err.message));
     }
 }
+
+// [신규 추가] 게시글 등록 계정과 현재 로그인 계정이 같을 때만 작동하는 삭제 클라우드 연동 함수
+function deleteItem(id) {
+    if (!currentUser) return alert("로그인이 필요합니다.");
+    
+    if (confirm("정말 이 분실물 게시글을 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.")) {
+        db.collection("lostItems").doc(id).delete()
+            .then(() => alert("서버에서 안전하게 삭제되었습니다."))
+            .catch(err => alert("삭제 실패: " + err.message));
+    }
+}
+window.toggleClaimStatus = toggleClaimStatus;
+window.deleteItem = deleteItem;
 
 function renderItems() {
     itemListContainer.className = `item-list ${currentView}`;
@@ -264,15 +281,24 @@ function renderItems() {
                 }
             }
 
+            // [신규] 내가 등록한 글인지 대조 검증 후 조건부 삭제 버튼 생성
+            let deleteBtnHtml = '';
+            if (currentUser && item.authorUid === currentUser.uid) {
+                deleteBtnHtml = `<button class="delete-btn" onclick="deleteItem('${item.id}')">삭제</button>`;
+            }
+
             card.innerHTML = `
                 ${imagesHtml}
                 <div class="item-info">
                     <div class="card-title">${item.name}</div>
                     <div class="card-meta">장소: ${item.location}</div>
                     <div class="card-meta">날짜: ${item.date}</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px; gap:4px;">
                         <span class="badge">${categoryMap[item.category]}</span>
-                        ${buttonHtml}
+                        <div style="display:flex; gap:4px;">
+                            ${buttonHtml}
+                            ${deleteBtnHtml}
+                        </div>
                     </div>
                 </div>
             `;
