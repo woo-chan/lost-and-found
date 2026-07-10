@@ -15,14 +15,19 @@
         <header>
             <h1>분실물 찾기</h1>
             <div class="auth-box">
-                <div id="login-form-area" class="auth-form">
-                    <input type="email" id="login-email" placeholder="이메일 주소" required>
-                    <input type="password" id="login-password" placeholder="비밀번호" required>
-                    <button id="login-btn" class="auth-btn">로그인</button>
-                    <button id="signup-btn" class="auth-btn signup-btn">회원가입</button>
+                <div id="logged-out-area">
+                    <button id="google-login-btn" class="google-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 48 48">
+                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                            <path fill="#4285F4" d="M46.5 24c0-1.61-.15-3.16-.42-4.69H24v8.89h12.66c-.55 2.92-2.19 5.39-4.67 7.05l7.24 5.61C43.51 36.19 46.5 30.73 46.5 24z"/>
+                            <path fill="#FBBC05" d="M10.54 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.98-6.19z"/>
+                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.24-5.61c-2.11 1.41-4.8 2.26-8.65 2.26-6.26 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                        </svg>
+                        <span>구글로 로그인</span>
+                    </button>
                 </div>
                 
-                <div id="user-info-area" class="auth-logged" style="display: none;">
+                <div id="logged-in-area" style="display: none;">
                     <span id="user-info" class="user-info"></span>
                     <button id="logout-btn" class="auth-btn">로그아웃</button>
                     <button id="open-modal-btn" class="open-btn">분실물 등록하기</button>
