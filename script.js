@@ -86,14 +86,15 @@ customFileTrigger.addEventListener('click', () => {
     itemImagesInput.click();
 });
 
+// [수정] 파일 선택 메시지창에서도 📸 이모지 완벽 배제
 itemImagesInput.addEventListener('change', () => {
     const files = itemImagesInput.files;
     if (files.length > 0) {
-        fileCountPreview.innerText = `📸 선택된 사진: ${files.length}개`;
+        fileCountPreview.innerText = `선택된 사진: ${files.length}개`;
         customFileTrigger.style.color = '#334155';
         customFileTrigger.style.borderColor = '#3b82f6';
     } else {
-        fileCountPreview.innerText = '예: 사진 업로드 (클릭하여 선택)';
+        fileCountPreview.innerText = '사진 업로드 (클릭하여 선택)';
         customFileTrigger.style.color = '#94a3b8';
         customFileTrigger.style.borderColor = '#cbd5e1';
     }
@@ -140,7 +141,7 @@ openModalBtn.addEventListener('click', () => {
 
 function closeSidePage() {
     lostItemForm.reset();
-    fileCountPreview.innerText = '예: 사진 업로드 (클릭하여 선택)';
+    fileCountPreview.innerText = '사진 업로드 (클릭하여 선택)';
     customFileTrigger.style.color = '#94a3b8';
     customFileTrigger.style.borderColor = '#cbd5e1';
     
@@ -202,11 +203,11 @@ lostItemForm.addEventListener('submit', async (e) => {
             authorEmail: currentUser.email
         });
 
-        // [수정] 탭이 시각적으로 먼저 자동으로 닫히도록 조치 후 알림을 띄웁니다.
+        // [수정] 성공 데이터 트랜잭션 수립 후 즉각 닫기가 선행되도록 정렬 변경
         closeSidePage();
         setTimeout(() => {
             alert('서버에 분실물이 안전하게 기록되었습니다!');
-        }, 350);
+        }, 100);
 
     } catch (err) {
         alert("등록 실패: " + err.message);
@@ -240,7 +241,7 @@ function openImageLightbox(id) {
         container.appendChild(img);
     });
 
-    lightbox.style.display = 'block';
+    lightbox.style.display = 'flex';
     setTimeout(() => lightbox.classList.add('show'), 10);
 }
 
@@ -259,9 +260,7 @@ function renderItems() {
     itemListContainer.innerHTML = '';
 
     const totalCount = lostItems.length;
-    const claimedCount = lostItems.filter(item => item.status === 'claimed').length;
     document.getElementById('count-total').innerText = `전체 ${totalCount}`;
-    document.getElementById('count-claimed').innerText = `완료 ${claimedCount}`;
 
     const filteredItems = currentCategory === 'all' 
         ? lostItems 
@@ -276,7 +275,7 @@ function renderItems() {
 
         paginatedItems.forEach(item => {
             const card = document.createElement('div');
-            card.className = `item-card ${item.status === 'claimed' ? 'claimed' : ''}`;
+            card.className = `item-card`;
 
             let imagesHtml = `<div class="card-images" onclick="openImageLightbox('${item.id}')" title="사진 크게 보기">`;
             item.imageUrls.forEach(url => {
@@ -284,7 +283,7 @@ function renderItems() {
             });
             imagesHtml += '</div>';
 
-            // [수정] 본인 확인 후 '삭제' 버튼만 노출되도록 '주인 찾기' 버튼 로직 완전 제거
+            // [수정] 주인 찾기 버튼 잔재 코드를 완전히 제거하고 삭제만 조건부 바인딩
             let deleteBtnHtml = '';
             if (currentUser && item.authorUid === currentUser.uid) {
                 deleteBtnHtml = `<button class="delete-btn" onclick="deleteItem('${item.id}')">삭제</button>`;
