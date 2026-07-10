@@ -58,7 +58,6 @@
             <h2>
                 분실물 목록 
                 <span id="count-total" class="count-badge">전체 0</span>
-                <span id="count-claimed" class="count-badge">완료 0</span>
             </h2>
             <div id="item-list" class="item-list grid">
                 <p class="no-data">등록된 분실물이 없습니다.</p>
@@ -96,8 +95,8 @@
                     <div class="form-group">
                         <label>사진 첨부 (최대 3개, 필수)</label>
                         <div id="custom-file-trigger" class="custom-file-box">
-                            <span id="file-count-preview">예: 사진 업로드 (클릭하여 선택)</span>
-                            <span class="upload-icon">📁</span>
+                            <span id="file-count-preview">사진 업로드 (클릭하여 선택)</span>
+                            <span class="upload-icon">첨부</span>
                         </div>
                         <input type="file" id="item-images" accept="image/*" multiple required style="display: none;">
                     </div>
@@ -106,12 +105,12 @@
                 </form>
             </div>
         </div>
+    </div>
 
-        <div id="image-lightbox-modal" class="lightbox-modal" onclick="closeImageLightbox()">
-            <span class="lightbox-close">&times;</span>
-            <div class="lightbox-content" onclick="event.stopPropagation()">
-                <div id="lightbox-images-container" class="lightbox-slider"></div>
-            </div>
+    <div id="image-lightbox-modal" class="lightbox-modal" style="display: none;" onclick="closeImageLightbox()">
+        <span class="lightbox-close" onclick="closeImageLightbox()">&times;</span>
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <div id="lightbox-images-container" class="lightbox-slider"></div>
         </div>
     </div>
 
