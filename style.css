@@ -17,13 +17,10 @@ h2 { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: #1e293b; dis
 .google-btn:hover { background: #f8fafc; border-color: #cbd5e1; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); }
 .google-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
 
-/* [수정] 로그인 완료 컴포넌트 간격(gap) 제어 및 수평 정렬 */
 .auth-logged { display: flex; align-items: center; gap: 12px; }
-
-/* [수정] 버튼 글씨와 완벽히 동일한 크기 및 두께로 인라인 동기화 */
 .user-info { font-size: 13px; font-weight: 600; color: #475569; white-space: nowrap; }
 
-/* [수정] 등록 버튼 패딩 균형 조절 */
+/* 등록 버튼 */
 .open-btn { background-color: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 13px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2); }
 .open-btn:hover { background-color: #059669; transform: translateY(-1px); }
 
@@ -83,7 +80,7 @@ h2 { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: #1e293b; dis
 .item-list.list .badge { display: inline-block; align-self: flex-start; padding: 3px 8px; font-size: 11px; border-radius: 6px; background: #eff6ff; color: #1d4ed8; font-weight: 700; margin-top: 1px; }
 .item-list.list .status-btn { align-self: flex-start; padding: 6px 12px; font-size: 12px; border-radius: 8px; }
 
-/* ─── [복구 및 완비] 1. 모달 뼈대 및 모달 컨텐츠 ─── */
+/* 모달 본체 크기 및 레이아웃 정의 */
 .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.3); backdrop-filter: blur(2px); }
 .modal.show { display: block; }
 .modal-content { position: fixed; right: -450px; top: 0; width: 100%; max-width: 400px; height: 100%; background-color: white; box-shadow: -10px 0 30px rgba(0,0,0,0.08); padding: 40px 24px; transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -92,13 +89,17 @@ h2 { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: #1e293b; dis
 .close-btn:hover { color: #1e293b; }
 .modal-content h2 { font-size: 18px; font-weight: 800; margin-bottom: 24px; color: #0f172a; }
 
-/* ─── [복구 및 완비] 2. 내부 입력 폼 필드 요소 디자인 전체 복원 ─── */
+/* 내부 입력 폼 필드 요소 디자인 */
 .form-group { margin-bottom: 20px; }
 .form-group label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 13px; color: #334155; }
 .form-group input, .form-group select { width: 100%; padding: 11px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; color: #334155; outline: none; transition: border-color 0.2s; }
 .form-group input:focus, .form-group select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-.form-group input[type="file"] { padding: 8px; background: #f8fafc; cursor: pointer; }
 
-/* ─── [복구 및 완비] 3. 모달 내부 등록완료 전송 버튼 스타일 복원 ─── */
+/* [추가] 고급스러운 점선형 커스텀 파일 업로드 상자 스타일링 */
+.custom-file-label { display: block; text-align: center; background: #f8fafc; border: 2px dashed #cbd5e1; padding: 18px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #64748b; transition: all 0.2s; }
+.custom-file-label:hover { background: #f1f5f9; border-color: #3b82f6; color: #3b82f6; }
+.file-preview-text { font-size: 12px; color: #94a3b8; margin-top: 6px; font-weight: 500; transition: color 0.2s; }
+
+/* 모달 내부 최종 전송 버튼 */
 .submit-btn { width: 100%; background-color: #3b82f6; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 700; margin-top: 15px; transition: background 0.2s; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); }
 .submit-btn:hover { background-color: #2563eb; }
