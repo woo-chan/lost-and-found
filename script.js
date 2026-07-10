@@ -51,7 +51,6 @@ const categoryMap = {
     others: '기타'
 };
 
-// Firestore 1MB 제한 우회를 위한 초경량 압축 최적화 (가로 400px, 화질 50%)
 function compressAndConvertToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -139,7 +138,6 @@ openModalBtn.addEventListener('click', () => {
     setTimeout(() => { modal.classList.add('show'); }, 10);
 });
 
-// [수정] 모달이 완전히 닫힐 때 '이미지 압축 중...' 버튼 잠금 상태를 즉시 확실하게 해제
 function closeSidePage() {
     lostItemForm.reset();
     fileCountPreview.innerText = '예: 사진 업로드 (클릭하여 선택)';
@@ -204,30 +202,19 @@ lostItemForm.addEventListener('submit', async (e) => {
             authorEmail: currentUser.email
         });
 
+        // [수정] 탭이 시각적으로 먼저 자동으로 닫히도록 조치 후 알림을 띄웁니다.
         closeSidePage();
-        alert('서버에 분실물이 안전하게 기록되었습니다!');
+        setTimeout(() => {
+            alert('서버에 분실물이 안전하게 기록되었습니다!');
+        }, 350);
+
     } catch (err) {
         alert("등록 실패: " + err.message);
-    } finally {
-        // [수정] 성공하든 실패하든 전송 프로세스가 끝나면 로딩 텍스트 원상복구
         submitBtn.innerText = "등록하기";
         submitBtn.disabled = false;
     }
 });
 
-function toggleClaimStatus(id) {
-    if (!currentUser) return alert("로그인 후 이용하실 수 있습니다.");
-    
-    if (confirm("이 분실물을 수령 완료 상태로 전환하시겠습니까?")) {
-        db.collection("lostItems").doc(id).update({
-            status: 'claimed'
-        }).then(() => {
-            alert('수령 처리가 완료되었습니다.');
-        }).catch(err => alert("수정 실패: " + err.message));
-    }
-}
-
-// [신규 추가] 게시글 등록 계정과 현재 로그인 계정이 같을 때만 작동하는 삭제 클라우드 연동 함수
 function deleteItem(id) {
     if (!currentUser) return alert("로그인이 필요합니다.");
     
@@ -237,8 +224,35 @@ function deleteItem(id) {
             .catch(err => alert("삭제 실패: " + err.message));
     }
 }
-window.toggleClaimStatus = toggleClaimStatus;
+
+function openImageLightbox(id) {
+    const item = lostItems.find(item => item.id === id);
+    if (!item || !item.imageUrls || item.imageUrls.length === 0) return;
+
+    const lightbox = document.getElementById('image-lightbox-modal');
+    const container = document.getElementById('lightbox-images-container');
+    container.innerHTML = ''; 
+
+    item.imageUrls.forEach(url => {
+        const img = document.createElement('img');
+        img.src = url;
+        img.className = 'lightbox-img';
+        container.appendChild(img);
+    });
+
+    lightbox.style.display = 'block';
+    setTimeout(() => lightbox.classList.add('show'), 10);
+}
+
+function closeImageLightbox() {
+    const lightbox = document.getElementById('image-lightbox-modal');
+    lightbox.classList.remove('show');
+    setTimeout(() => lightbox.style.display = 'none', 300);
+}
+
 window.deleteItem = deleteItem;
+window.openImageLightbox = openImageLightbox;
+window.closeImageLightbox = closeImageLightbox;
 
 function renderItems() {
     itemListContainer.className = `item-list ${currentView}`;
@@ -264,24 +278,13 @@ function renderItems() {
             const card = document.createElement('div');
             card.className = `item-card ${item.status === 'claimed' ? 'claimed' : ''}`;
 
-            let imagesHtml = '<div class="card-images">';
+            let imagesHtml = `<div class="card-images" onclick="openImageLightbox('${item.id}')" title="사진 크게 보기">`;
             item.imageUrls.forEach(url => {
                 imagesHtml += `<img src="${url}" alt="${item.name}">`;
             });
             imagesHtml += '</div>';
 
-            let buttonHtml = '';
-            if (item.status === 'claimed') {
-                buttonHtml = `<button class="status-btn completed" disabled>수령 완료</button>`;
-            } else {
-                if (!currentUser) {
-                    buttonHtml = `<button class="status-btn completed" disabled title="로그인이 필요합니다">주인 찾음</button>`;
-                } else {
-                    buttonHtml = `<button class="status-btn" onclick="toggleClaimStatus('${item.id}')">주인 찾음</button>`;
-                }
-            }
-
-            // [신규] 내가 등록한 글인지 대조 검증 후 조건부 삭제 버튼 생성
+            // [수정] 본인 확인 후 '삭제' 버튼만 노출되도록 '주인 찾기' 버튼 로직 완전 제거
             let deleteBtnHtml = '';
             if (currentUser && item.authorUid === currentUser.uid) {
                 deleteBtnHtml = `<button class="delete-btn" onclick="deleteItem('${item.id}')">삭제</button>`;
@@ -296,7 +299,6 @@ function renderItems() {
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px; gap:4px;">
                         <span class="badge">${categoryMap[item.category]}</span>
                         <div style="display:flex; gap:4px;">
-                            ${buttonHtml}
                             ${deleteBtnHtml}
                         </div>
                     </div>
