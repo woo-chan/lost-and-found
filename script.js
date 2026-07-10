@@ -9,7 +9,6 @@ const firebaseConfig = {
     appId: "1:715679492378:web:070891f2b5efa9d73c64a3"
 };
 
-// 파이어베이스 인스턴스 초기화
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
@@ -34,12 +33,15 @@ const filterButtons = document.querySelectorAll('.category-buttons .btn');
 const viewGridBtn = document.getElementById('view-grid-btn');
 const viewListBtn = document.getElementById('view-list-btn');
 
-// [수정] 구글 인증 단일 처리를 위한 타겟팅 조정
 const googleLoginBtn = document.getElementById('google-login-btn');
 const logoutBtn = document.getElementById('logout-btn');
 const loggedOutArea = document.getElementById('logged-out-area');
 const loggedInArea = document.getElementById('logged-in-area');
 const userInfoSpan = document.getElementById('user-info');
+
+// [추가] 커스텀 파일 피드백 제어 노드 타겟팅
+const itemImagesInput = document.getElementById('item-images');
+const fileCountPreview = document.getElementById('file-count-preview');
 
 const categoryMap = {
     wallet: '지갑 · 카드',
@@ -49,7 +51,6 @@ const categoryMap = {
     others: '기타'
 };
 
-// 이미지 파일 압축 프로세서
 function compressAndConvertToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -81,7 +82,18 @@ function compressAndConvertToBase64(file) {
     });
 }
 
-// ─── [수정] 1. 구글 팝업 인증 처리 일원화 ───
+// [추가] 유저가 사진을 선택했을 때 '선택된 파일 없음' 텍스트를 역동적으로 변환
+itemImagesInput.addEventListener('change', () => {
+    const files = itemImagesInput.files;
+    if (files.length > 0) {
+        fileCountPreview.innerText = `선택된 사진: ${files.length}개`;
+        fileCountPreview.style.color = '#3b82f6';
+    } else {
+        fileCountPreview.innerText = '선택된 파일 없음';
+        fileCountPreview.style.color = '#94a3b8';
+    }
+});
+
 googleLoginBtn.addEventListener('click', () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider)
@@ -96,7 +108,7 @@ logoutBtn.addEventListener('click', () => {
 auth.onAuthStateChanged((user) => {
     if (user) {
         currentUser = user;
-        userInfoSpan.innerText = `${user.displayName}님`; // 구글 프로필 실명 바인딩
+        userInfoSpan.innerText = `${user.displayName}님`; 
         loggedOutArea.style.display = "none";
         loggedInArea.style.display = "flex"; 
     } else {
@@ -108,7 +120,6 @@ auth.onAuthStateChanged((user) => {
     renderItems(); 
 });
 
-// 2. 클라우드 실시간 데이터베이스(Firestore) 동기화 감지
 db.collection("lostItems").orderBy("timestamp", "asc").onSnapshot((snapshot) => {
     lostItems = [];
     snapshot.forEach((doc) => {
@@ -117,13 +128,16 @@ db.collection("lostItems").orderBy("timestamp", "asc").onSnapshot((snapshot) => 
     renderItems();
 });
 
-// 3. 등록 패널 제어
 openModalBtn.addEventListener('click', () => {
     modal.style.display = 'block';
     setTimeout(() => { modal.classList.add('show'); }, 10);
 });
+
+// [수정] 모달이 닫힐 때 파일 미리보기 카운트 텍스트도 원상 복구 초기화
 function closeSidePage() {
     lostItemForm.reset();
+    fileCountPreview.innerText = '선택된 파일 없음';
+    fileCountPreview.style.color = '#94a3b8';
     modal.classList.remove('show');
     setTimeout(() => { modal.style.display = 'none'; }, 300);
 }
@@ -142,7 +156,6 @@ viewListBtn.addEventListener('click', () => {
     renderItems();
 });
 
-// 4. 분실물 등록 처리
 lostItemForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!currentUser) return alert("로그인이 필요한 작업입니다.");
@@ -150,7 +163,7 @@ lostItemForm.addEventListener('submit', async (e) => {
     const category = document.getElementById('item-category').value;
     const name = document.getElementById('item-name').value;
     const location = document.getElementById('item-location').value;
-    const imageFiles = document.getElementById('item-images').files;
+    const imageFiles = itemImagesInput.files;
 
     if (imageFiles.length === 0 || imageFiles.length > 3) {
         return alert('사진은 최소 1장부터 최대 3장까지 등록할 수 있습니다.');
@@ -189,7 +202,6 @@ lostItemForm.addEventListener('submit', async (e) => {
     }
 });
 
-// 5. 주인 찾음 상태 전환
 function toggleClaimStatus(id) {
     if (!currentUser) return alert("로그인 후 이용하실 수 있습니다.");
     
@@ -202,7 +214,6 @@ function toggleClaimStatus(id) {
     }
 }
 
-// 6. 화면 데이터 및 페이지네이션 렌더링 함수
 function renderItems() {
     itemListContainer.className = `item-list ${currentView}`;
     itemListContainer.innerHTML = '';
@@ -262,7 +273,6 @@ function renderItems() {
     renderPagination(filteredItems.length);
 }
 
-// 5개 제한 페이지네이션
 function renderPagination(totalItems) {
     paginationTop.innerHTML = '';
     paginationBottom.innerHTML = '';
@@ -331,7 +341,7 @@ filterButtons.forEach(button => {
 
 function resetFilterButtons() {
     filterButtons.forEach(btn => {
-        if (btn.getAttribute('data-category') === 'all') {
+        if (btn.getAttribute('data-category'] === 'all') {
             btn.classList.add('active');
         } else {
             btn.classList.remove('active');
