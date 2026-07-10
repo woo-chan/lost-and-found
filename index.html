@@ -6,18 +6,15 @@
     <title>분실물 찾기</title>
     <link rel="stylesheet" href="style.css">
     
-    <!-- 파이어베이스 내장 라이브러리 로드 -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <div class="container">
-        <!-- 헤더 영역 -->
         <header>
             <h1>분실물 찾기</h1>
             <div class="auth-box">
-                <!-- 로그인 전 -->
                 <div id="logged-out-area">
                     <button id="google-login-btn" class="google-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 48 48">
@@ -30,7 +27,6 @@
                     </button>
                 </div>
                 
-                <!-- 로그인 후 -->
                 <div id="logged-in-area" class="auth-logged" style="display: none;">
                     <span id="user-info" class="user-info"></span>
                     <button id="logout-btn" class="auth-btn">로그아웃</button>
@@ -39,7 +35,6 @@
             </div>
         </header>
 
-        <!-- 카테고리 필터 버튼 -->
         <section class="filter-section">
             <div class="category-buttons">
                 <button class="btn active" data-category="all">전체</button>
@@ -51,7 +46,6 @@
             </div>
         </section>
 
-        <!-- 제어 섹션 -->
         <section class="controls-section">
             <div id="pagination-top" class="pagination"></div>
             <div class="view-toggles">
@@ -60,7 +54,6 @@
             </div>
         </section>
 
-        <!-- 목록 표시 영역 -->
         <section class="list-section">
             <h2>
                 분실물 목록 
@@ -73,7 +66,6 @@
             <div id="pagination-bottom" class="pagination"></div>
         </section>
 
-        <!-- 슬라이딩 등록 패널 -->
         <div id="lost-item-modal" class="modal">
             <div class="modal-content">
                 <span id="close-modal-btn" class="close-btn">&times;</span>
@@ -101,14 +93,13 @@
                         <input type="text" id="item-location" placeholder="예: 2학년 3반 교실" required>
                     </div>
 
-                    <!-- [수정] 네이티브 파일 인풋을 완벽히 숨기고 커스텀 드롭라벨로 개편 -->
                     <div class="form-group">
                         <label>사진 첨부 (최대 3개, 필수)</label>
-                        <label for="item-images" class="custom-file-label">
-                            사진 업로드 (클릭하여 선택)
-                        </label>
+                        <div id="custom-file-trigger" class="custom-file-box">
+                            <span id="file-count-preview">예: 사진 업로드 (클릭하여 선택)</span>
+                            <span class="upload-icon">📁</span>
+                        </div>
                         <input type="file" id="item-images" accept="image/*" multiple required style="display: none;">
-                        <div id="file-count-preview" class="file-preview-text">선택된 파일 없음</div>
                     </div>
 
                     <button type="submit" class="submit-btn">등록하기</button>
